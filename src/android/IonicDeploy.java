@@ -409,7 +409,7 @@ public class IonicDeploy extends CordovaPlugin {
           String url = this.server;
           final DownloadTask downloadTask = new DownloadTask(this.myContext, callbackContext);
           downloadTask.execute(url);
-      } catch (JSONException e) {
+      } catch (Exception e) {
         logMessage("DOWNLOAD", e.toString());
         callbackContext.error("Error fetching download");
       }
