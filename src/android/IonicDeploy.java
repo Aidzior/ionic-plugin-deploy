@@ -676,6 +676,11 @@ public class IonicDeploy extends CordovaPlugin {
 
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
         File newFile = new File(versionDir + "/" + zipEntry.getName());
+        
+        if(newFile.getParentFile().exists() && newFile.getParentFile().isFile()) {
+          newFile.getParentFile().delete();
+        }        
+        
         newFile.getParentFile().mkdirs();
 
         byte[] buffer = new byte[2048];
