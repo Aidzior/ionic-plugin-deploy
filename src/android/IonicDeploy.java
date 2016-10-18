@@ -108,7 +108,6 @@ public class IonicDeploy extends CordovaPlugin {
     this.prefs = getPreferences();
     this.v = webView;
     this.version_label = prefs.getString("ionicdeploy_version_label", IonicDeploy.NO_DEPLOY_LABEL);
-    this.initVersionChecks();
   }
 
   private String getUUID() {
@@ -213,12 +212,13 @@ public class IonicDeploy extends CordovaPlugin {
       return true;
     } else if (action.equals("extract")) {
       logMessage("EXTRACT", "Extracting update");
-      final String uuid = this.getUUID("");
+      final String uuid = args.getString(0);
       cordova.getThreadPool().execute(new Runnable() {
         public void run() {
           unzip("www.zip", uuid, callbackContext);
         }
       });
+      this.prefs.edit().putString("uuid", uuid).apply();
       return true;
     } else if (action.equals("redirect")) {
       final String uuid = this.getUUID("");
@@ -404,20 +404,16 @@ public class IonicDeploy extends CordovaPlugin {
 
   private void downloadUpdate(CallbackContext callbackContext) {
     String upstream_uuid = this.prefs.getString("upstream_uuid", "");
-    if (upstream_uuid != "" && this.hasVersion(upstream_uuid)) {
-      // Set the current version to the upstream uuid
-      prefs.edit().putString("uuid", upstream_uuid).apply();
-      callbackContext.success("true");
-    } else {
+
       try {
-          String url = this.last_update.getString("url");
+          String url = this.server;
           final DownloadTask downloadTask = new DownloadTask(this.myContext, callbackContext);
           downloadTask.execute(url);
       } catch (JSONException e) {
         logMessage("DOWNLOAD", e.toString());
         callbackContext.error("Error fetching download");
       }
-    }
+    
   }
 
   /**
@@ -657,13 +653,7 @@ public class IonicDeploy extends CordovaPlugin {
 
     logMessage("UNZIP", upstream_uuid);
 
-    if (upstream_uuid != "" && this.hasVersion(upstream_uuid)) {
-      this.ignore_deploy = false;
-      this.updateVersionLabel(IonicDeploy.NOTHING_TO_IGNORE);
 
-      callbackContext.success("done"); // we have already extracted this version
-      return;
-    }
 
     try  {
       FileInputStream inputStream = this.myContext.openFileInput(zip);
@@ -733,8 +723,7 @@ public class IonicDeploy extends CordovaPlugin {
       return;
     }
 
-    // Save the version we just downloaded as a version on hand
-    saveVersion(upstream_uuid);
+
 
     String wwwFile = this.myContext.getFileStreamPath(zip).getAbsolutePath().toString();
     if (this.myContext.getFileStreamPath(zip).exists()) {
@@ -750,7 +739,7 @@ public class IonicDeploy extends CordovaPlugin {
 
     // if we get here we know unzip worked
     this.ignore_deploy = false;
-    this.updateVersionLabel(IonicDeploy.NOTHING_TO_IGNORE);
+
 
     callbackContext.success("done");
   }
@@ -763,7 +752,7 @@ public class IonicDeploy extends CordovaPlugin {
   private void redirect(final String uuid) {
     // TODO: get rid of recreatePlugins
     String ignore = this.prefs.getString("ionicdeploy_version_ignore", IonicDeploy.NOTHING_TO_IGNORE);
-    if (!uuid.equals("") && !this.ignore_deploy && !uuid.equals(ignore)) {
+    if (!uuid.equals("")) {
       prefs.edit().putString("uuid", uuid).apply();
       final File versionDir = this.myContext.getDir(uuid, Context.MODE_PRIVATE);
 
