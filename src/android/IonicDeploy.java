@@ -192,6 +192,7 @@ public class IonicDeploy extends CordovaPlugin {
 
     if (action.equals("initialize")) {
       this.server = args.getString(1);
+      callbackContext.success("true");
       return true;
     } else if (action.equals("check")) {
       logMessage("CHECK", "Checking for updates");
