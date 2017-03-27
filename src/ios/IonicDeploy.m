@@ -482,24 +482,12 @@ static NSOperationQueue *delegateQueue;
 
                 // Do redirect
                 NSLog(@"Redirecting to: %@", components.URL.absoluteString);
-                SEL wkWebViewSelector = NSSelectorFromString(@"loadFileURL:allowingReadAccessToURL:");
-
-                if ([self.webView respondsToSelector:wkWebViewSelector]) {
-                    dispatch_async(dispatch_get_main_queue(), ^(void){
-                        NSURL *readAccessUrl = [components.URL URLByDeletingLastPathComponent];
-                        NSLog(@"Reloading the WKWebView.");
-                        SEL wkWebViewReloadSelector = NSSelectorFromString(@"reload");
-                        ((id (*)(id, SEL))objc_msgSend)(self.webView, wkWebViewReloadSelector);
-                        ((id (*)(id, SEL, id, id))objc_msgSend)(self.webView, wkWebViewSelector, components.URL, readAccessUrl);
-                    });
-                }
-                else {
-                    dispatch_async(dispatch_get_main_queue(), ^(void){
-                        NSLog(@"Reloading the UIWebView.");
-                        [((UIWebView*)self.webView) reload];
-                        [((UIWebView*)self.webView) loadRequest: [NSURLRequest requestWithURL:components.URL] ];
-                    });
-                }
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    NSLog(@"Reloading the web view.");
+                    SEL reloadSelector = NSSelectorFromString(@"reload");
+                    ((id (*)(id, SEL))objc_msgSend)(self.webView, reloadSelector);
+                    [self.webViewEngine loadRequest:[NSURLRequest requestWithURL:components.URL]];
+                });
             }
         });
     }

@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## 0.6.6
+
+* (fix) Use loadRequest instead of loadFileURL for WKWebView
+
 ## 0.6.5
 
 * (fix) Rework initialization step on iOS. Fixes #94
