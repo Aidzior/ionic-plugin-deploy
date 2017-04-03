@@ -803,17 +803,23 @@ public class IonicDeploy extends CordovaPlugin {
   private static String updateIndexCordovaReference(String indexStr) {
     // Init the new script
     String newReference = "<script src=\"file:///android_asset/www/cordova.js\"></script>";
+    String newConfigReference = "<script src=\"file:///android_asset/www/config.js\"></script>";
 
     // Define regular expressions
     String commentedRegexString = "<!--.*<script src=(\"|')(.*\\/|)cordova\\.js.*(\"|')>.*<\\/script>.*-->";  // Find commented cordova.js
     String cordovaRegexString = "<script src=(\"|')(.*\\/|)cordova\\.js.*(\"|')>.*<\\/script>";  // Find cordova.js
     String scriptRegexString = "<script.*>.*</script>";  // Find a script tag
+    String configRegexString = "<script src=(\"|')(.*\\/|)config\\.js.*(\"|')>.*<\\/script>";  // Find config.js
 
     // Compile the regexes
     Pattern commentedRegex = Pattern.compile(commentedRegexString);
     Pattern cordovaRegex = Pattern.compile(cordovaRegexString);
     Pattern scriptRegex = Pattern.compile(scriptRegexString);
+    Pattern configRegex = Pattern.compile(configRegexString);
 
+    // replace app config path
+    indexStr = indexStr.replaceAll(configRegexString, newConfigReference);
+    
     // First, make sure cordova.js isn't commented out.
     if (commentedRegex.matcher(indexStr).find()) {
       // It is, let's uncomment it.
