@@ -435,6 +435,21 @@ static NSOperationQueue *delegateQueue;
                                     matchesInString:htmlData
                                     options:0
                                     range:NSMakeRange(0, [htmlData length])];
+
+                NSString *newConfigReference = [NSString
+                                                stringWithFormat:@"<script src=\"%@\"></script>", [[NSBundle mainBundle] pathForResource:@"www/config" ofType:@"js"]];
+
+                NSRegularExpression *configRegex = [NSRegularExpression
+                                                    regularExpressionWithPattern:@"<script src=(\"|')(.*\\/|)config\\.js.*(\"|')>.*<\\/script>"
+                                                    options:NSRegularExpressionCaseInsensitive
+                                                    error:&error];
+                htmlData = [configRegex
+                            stringByReplacingMatchesInString:htmlData
+                            options:0
+                            range:NSMakeRange(0, [htmlData length])
+                            withTemplate:newConfigReference];
+
+
                 if (matches && matches.count){
                     // It was commented out, uncomment and update it.
                     htmlData = [commentedRegex
