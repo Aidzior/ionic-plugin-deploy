@@ -540,7 +540,9 @@ public class IonicDeploy extends CordovaPlugin {
       prefs.edit().putString("loaded_uuid", "").apply();
     }
     File versionDir = this.myContext.getDir(uuid, Context.MODE_PRIVATE);
+    logMessage("REMOVE", "Removing " +  versionDir.getAbsolutePath());
     if (versionDir.exists()) {
+      logMessage("REMOVE", "Folder " +  versionDir.getAbsolutePath() + " exists");
       String deleteCmd = "rm -r " + versionDir.getAbsolutePath();
       Runtime runtime = Runtime.getRuntime();
       try {
