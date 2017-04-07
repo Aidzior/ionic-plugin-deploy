@@ -543,11 +543,9 @@ public class IonicDeploy extends CordovaPlugin {
     logMessage("REMOVE", "Removing " +  versionDir.getAbsolutePath());
     if (versionDir.exists()) {
       logMessage("REMOVE", "Folder " +  versionDir.getAbsolutePath() + " exists");
-      String deleteCmd = "rm -rf " + versionDir.getAbsolutePath();
+      String deleteCmd = "rm -rf " + versionDir.getAbsolutePath() + "/*";
       Runtime runtime = Runtime.getRuntime();
       try {
-        Boolean isRemoved = versionDir.delete();
-        logMessage("REMOVE", "Folder " +  versionDir.getAbsolutePath() + " removed: " + isRemoved);
         runtime.exec(deleteCmd);
         removeVersionFromPreferences(uuid);
         return true;
