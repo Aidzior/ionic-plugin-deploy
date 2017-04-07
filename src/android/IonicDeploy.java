@@ -712,6 +712,7 @@ public class IonicDeploy extends CordovaPlugin {
     } catch(Exception e) {
       //TODO Handle problems..
       logMessage("UNZIP_STEP", "Exception: " + e.getMessage());
+      logMessage("UNZIP_STEP", "Stacktrace: " + Log.getStackTraceString(e))
 
       // clean up any zip files dowloaded as they may be corrupted, we can download again if we start over
       String wwwFile = this.myContext.getFileStreamPath(zip).getAbsolutePath().toString();
