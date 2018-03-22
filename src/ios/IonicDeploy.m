@@ -56,8 +56,8 @@ static NSOperationQueue *delegateQueue;
         ignore = NOTHING_TO_IGNORE;
     }
 
-    if (![uuid isEqualToString:@""] && !self.ignore_deploy && ![uuid isEqualToString:ignore]) {
-        if ( uuid != nil && ![self.currentUUID isEqualToString: uuid] ) {
+
+        if ( uuid != nil ) {
             // Get target index.html
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
             NSString *libraryDirectory = [paths objectAtIndex:0];
@@ -86,9 +86,9 @@ static NSOperationQueue *delegateQueue;
                 }
             }
         }
-    }
+    
 
-    [self initVersionChecks];
+
 }
 
 - (NSString *) getUUID {
@@ -152,6 +152,7 @@ static NSOperationQueue *delegateQueue;
 
 - (void) initialize:(CDVInvokedUrlCommand *)command {
     self.deploy_server = [command.arguments objectAtIndex:1];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"true"] callbackId:command.callbackId];
 }
 
 - (void) check:(CDVInvokedUrlCommand *)command {
@@ -263,14 +264,9 @@ static NSOperationQueue *delegateQueue;
 
         NSLog(@"Upstream UUID: %@", upstream_uuid);
 
-        if (upstream_uuid != nil && [self hasVersion:upstream_uuid]) {
-            // Set the current version to the upstream version (we already have this version)
-            [prefs setObject:upstream_uuid forKey:@"uuid"];
-            [prefs synchronize];
-            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"true"] callbackId:self.callbackId];
-        } else {
+
             NSDictionary *result = self.last_update;
-            NSString *download_url = [result objectForKey:@"url"];
+            NSString *download_url = self.deploy_server;
 
             NSLog(@"download url is: %@", download_url);
 
@@ -284,7 +280,7 @@ static NSOperationQueue *delegateQueue;
 
             NSLog(@"Queueing Download...");
             [self.downloadManager addDownloadWithFilename:filePath URL:url];
-        }
+        
     });
 }
 
@@ -297,28 +293,22 @@ static NSOperationQueue *delegateQueue;
 
         NSString *upstream_uuid = [[NSUserDefaults standardUserDefaults] objectForKey:@"upstream_uuid"];
 
-        if(upstream_uuid != nil && [self hasVersion:upstream_uuid]) {
-            [self updateVersionLabel:NOTHING_TO_IGNORE];
-            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"done"] callbackId:self.callbackId];
-        } else {
+        
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
             NSString *libraryDirectory = [paths objectAtIndex:0];
             NSString *uuid = [[NSUserDefaults standardUserDefaults] objectForKey:@"uuid"];
             NSString *filePath = [NSString stringWithFormat:@"%@/%@", libraryDirectory, @"www.zip"];
-            NSString *extractPath = [NSString stringWithFormat:@"%@/%@/", libraryDirectory, uuid];
+            NSString *extractPath = [NSString stringWithFormat:@"%@/%@/", libraryDirectory, self.appId];
 
             NSLog(@"Path for zip file: %@", filePath);
             NSLog(@"Unzipping...");
 
             [SSZipArchive unzipFileAtPath:filePath toDestination:extractPath delegate:self];
-            [self saveVersion:upstream_uuid];
-            [self excludeVersionFromBackup:uuid];
-            [self updateVersionLabel:NOTHING_TO_IGNORE];
             BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
 
             NSLog(@"Unzipped...");
             NSLog(@"Removing www.zip %d", success);
-        }
+        
     });
 }
 
@@ -445,6 +435,21 @@ static NSOperationQueue *delegateQueue;
                                     matchesInString:htmlData
                                     options:0
                                     range:NSMakeRange(0, [htmlData length])];
+
+                NSString *newConfigReference = [NSString
+                                                stringWithFormat:@"<script src=\"%@\"></script>", [[NSBundle mainBundle] pathForResource:@"www/config" ofType:@"js"]];
+
+                NSRegularExpression *configRegex = [NSRegularExpression
+                                                    regularExpressionWithPattern:@"<script src=(\"|')(.*\\/|)config\\.js.*(\"|')>.*<\\/script>"
+                                                    options:NSRegularExpressionCaseInsensitive
+                                                    error:&error];
+                htmlData = [configRegex
+                            stringByReplacingMatchesInString:htmlData
+                            options:0
+                            range:NSMakeRange(0, [htmlData length])
+                            withTemplate:newConfigReference];
+
+
                 if (matches && matches.count){
                     // It was commented out, uncomment and update it.
                     htmlData = [commentedRegex
@@ -787,6 +792,9 @@ static NSOperationQueue *delegateQueue;
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 
     if (progress == 100) {
+        NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+        [prefs setObject:self.appId forKey: @"uuid"];
+        [prefs synchronize];        
         CDVPluginResult* pluginResult = nil;
 
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"done"];
