@@ -677,35 +677,37 @@ public class IonicDeploy extends CordovaPlugin {
       float extracted = 0.0f;
 
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-        File newFile = new File(versionDir + "/" + zipEntry.getName());
-        
-        if(newFile.getParentFile().exists() && newFile.getParentFile().isFile()) {
-          newFile.getParentFile().delete();
-        }        
-        
-        newFile.getParentFile().mkdirs();
+        if (zipEntry.getSize() != 0) {
+          File newFile = new File(versionDir + "/" + zipEntry.getName());
 
-        byte[] buffer = new byte[2048];
+          if(newFile.getParentFile().exists() && newFile.getParentFile().isFile()) {
+            newFile.getParentFile().delete();
+          }        
 
-        FileOutputStream fileOutputStream = new FileOutputStream(newFile);
-        BufferedOutputStream outputBuffer = new BufferedOutputStream(fileOutputStream, buffer.length);
-        int bits;
-        while((bits = zipInputStream.read(buffer, 0, buffer.length)) != -1) {
-          outputBuffer.write(buffer, 0, bits);
+          newFile.getParentFile().mkdirs();
+
+          byte[] buffer = new byte[2048];
+
+          FileOutputStream fileOutputStream = new FileOutputStream(newFile);
+          BufferedOutputStream outputBuffer = new BufferedOutputStream(fileOutputStream, buffer.length);
+          int bits;
+          while((bits = zipInputStream.read(buffer, 0, buffer.length)) != -1) {
+            outputBuffer.write(buffer, 0, bits);
+          }
+
+          zipInputStream.closeEntry();
+          outputBuffer.flush();
+          outputBuffer.close();
+
+          extracted += 1;
+
+          float progress = (extracted / entries) * new Float("100.0f");
+          logMessage("EXTRACT", "Progress: " + (int) progress + "%");
+
+          PluginResult progressResult = new PluginResult(PluginResult.Status.OK, (int) progress);
+          progressResult.setKeepCallback(true);
+          callbackContext.sendPluginResult(progressResult);
         }
-
-        zipInputStream.closeEntry();
-        outputBuffer.flush();
-        outputBuffer.close();
-
-        extracted += 1;
-
-        float progress = (extracted / entries) * new Float("100.0f");
-        logMessage("EXTRACT", "Progress: " + (int) progress + "%");
-
-        PluginResult progressResult = new PluginResult(PluginResult.Status.OK, (int) progress);
-        progressResult.setKeepCallback(true);
-        callbackContext.sendPluginResult(progressResult);
       }
       zipInputStream.close();
 

@@ -2,13 +2,13 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     id="ionic-plugin-deploy"
-    version="0.6.6">
+    version="0.6.7">
     <name>IonicDeploy</name>
     <description>Ionic Deploy Plugin</description>
     <license>Apache 2.0</license>
     <keywords>Ionic,deploy</keywords>
-    <repo>https://github.com/driftyco/ionic-plugin-deploy</repo>
-    <issue>https://github.com/driftyco/ionic-plugin-deploy/issues</issue>
+    <repo>https://github.com/ionic-team/ionic-plugin-deploy</repo>
+    <issue>https://github.com/ionic-team/ionic-plugin-deploy/issues</issue>
 
     <js-module src="www/ionicdeploy.js" name="IonicDeploy">
         <clobbers target="IonicDeploy" />

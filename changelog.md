@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## 0.6.7
+
+* (fix) Check size of elements before unzipping.
+
 ## 0.6.6
 
 * (fix) Use loadRequest instead of loadFileURL for WKWebView
