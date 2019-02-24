@@ -44,6 +44,7 @@ static NSOperationQueue *delegateQueue;
 - (void) pluginInitialize {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     self.cordova_js_resource = [[NSBundle mainBundle] pathForResource:@"www/cordova" ofType:@"js"];
+    self.cordova_js_resource = [self.cordova_js_resource stringByReplacingOccurrencesOfString:@"#" withString:@"%23"];    
     self.serialQueue = dispatch_queue_create("Deploy Plugin Queue", NULL);
     self.version_label = [prefs stringForKey:@"ionicdeploy_version_label"];
     if(self.version_label == nil) {
@@ -438,7 +439,7 @@ static NSOperationQueue *delegateQueue;
 
                 NSString *newConfigReference = [NSString
                                                 stringWithFormat:@"<script src=\"%@\"></script>", [[NSBundle mainBundle] pathForResource:@"www/config" ofType:@"js"]];
-
+                newConfigReference = [newConfigReference stringByReplacingOccurrencesOfString:@"#" withString:@"%23"];
                 NSRegularExpression *configRegex = [NSRegularExpression
                                                     regularExpressionWithPattern:@"<script src=(\"|')(.*\\/|)config\\.js.*(\"|')>.*<\\/script>"
                                                     options:NSRegularExpressionCaseInsensitive
