@@ -78,14 +78,6 @@ static NSOperationQueue *delegateQueue;
                      }
                  }];
 
-            } else {
-                // It's a UIWebView
-                NSString *currentIndex = [((UIWebView*)self.webView) stringByEvaluatingJavaScriptFromString:@"window.location.href"];
-                NSArray *indexSplit = [currentIndex componentsSeparatedByString:@"?"];
-                currentIndex = [indexSplit objectAtIndex:0];
-                if (![currentIndex isEqualToString:path]) {
-                    [self doRedirect];
-                }
             }
         }
     
