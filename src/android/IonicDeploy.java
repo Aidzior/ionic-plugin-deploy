@@ -782,17 +782,17 @@ public class IonicDeploy extends CordovaPlugin {
         fw.close();
 
         // Load in the new index.html
-        /*
+        
         cordova.getActivity().runOnUiThread(new Runnable() {
           @Override
           public void run() {
             logMessage("REDIRECT", "Loading deploy version: " + uuid);
             prefs.edit().putString("loaded_uuid", uuid).apply();
-            webView.loadUrlIntoView(indexLocation, false);
+            webView.loadUrl(indexLocation);
             webView.clearHistory();
           }
         });
-        */
+        
       } catch (Exception e) {
         logMessage("REDIRECT", "Pre-redirect cordova injection exception: " + Log.getStackTraceString(e));
       }
