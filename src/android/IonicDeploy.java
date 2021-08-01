@@ -788,14 +788,15 @@ public class IonicDeploy extends CordovaPlugin {
         fw.close();
 
         // Load in the new index.html
+         
         
         cordova.getActivity().runOnUiThread(new Runnable() {
           @Override
           public void run() {
                 
-    WebView webViewObj = new WebView(this.cordova.getActivity());
-    final WebSettings settings = webViewObj.getSettings();
-    settings.setAllowFileAccess(true);
+   WebView webViewObj = new WebView(cordova.getActivity());
+         final WebSettings settings = webViewObj.getSettings();
+         settings.setAllowFileAccess(true);
             logMessage("REDIRECT", "Loading deploy version: " + uuid);
             prefs.edit().putString("loaded_uuid", uuid).apply();
             webView.loadUrl(indexLocation);
