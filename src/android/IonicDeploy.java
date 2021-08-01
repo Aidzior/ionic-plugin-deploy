@@ -799,7 +799,7 @@ public class IonicDeploy extends CordovaPlugin {
               settings.setAllowFileAccess(true);
               logMessage("REDIRECT", "Loading deploy version: " + uuid);
               prefs.edit().putString("loaded_uuid", uuid).apply();
-              webView.loadUrl(indexLocation);
+              webView.loadUrlIntoView(indexLocation, false);
               webView.clearHistory();
             }
             catch(Exception e) {
