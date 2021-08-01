@@ -803,7 +803,7 @@ public class IonicDeploy extends CordovaPlugin {
               webView.clearHistory();
             }
             catch(Exception e) {
-                      logMessage("my custom error" + Log.getStackTraceString(e));
+                      Log.i("my custom error" + Log.getStackTraceString(e));
 
             }
           }
