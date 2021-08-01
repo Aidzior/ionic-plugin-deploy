@@ -49,6 +49,7 @@ import java.util.zip.ZipInputStream;
 
 import android.webkit.WebView;
 import android.webkit.WebSettings;
+import android.webkit.WebViewClient
 
 
 class JsonHttpResponse {
@@ -787,23 +788,27 @@ public class IonicDeploy extends CordovaPlugin {
         fw.write(newIndex);
         fw.close();
 
+       
+        
+        webView.getSettings().setAllowContentAccess(true);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+           WebViewClient wvClient = new WebViewClient();
         // Load in the new index.html
-         /*
+         
         WebView webViewObj = new WebView(cordova.getActivity());
+        webViewObj.setsetWebViewClient(wvClient);
         final WebSettings settings = webViewObj.getSettings();
         settings.setAllowFileAccess(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
-        */
-        webView.getSettings().setAllowContentAccess(true);
-        cordova.getActivity().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
+        
               logMessage("REDIRECT", "Loading deploy version: " + uuid);
               prefs.edit().putString("loaded_uuid", uuid).apply();
-              webView.loadUrlIntoView(indexLocation, false);
-              webView.clearHistory();
+              webViewObj.loadUrlIntoView(indexLocation, false);
+              webViewObj.clearHistory();
           }
         });
         
