@@ -46,6 +46,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+
+import android.webkit.WebView;
+import android.webkit.WebSettings;
+
+
 class JsonHttpResponse {
   String message;
   Boolean error;
@@ -108,6 +113,11 @@ public class IonicDeploy extends CordovaPlugin {
     this.prefs = getPreferences();
     this.v = webView;
     this.version_label = prefs.getString("ionicdeploy_version_label", IonicDeploy.NO_DEPLOY_LABEL);
+    
+    WebView webViewObj = new WebView(this.cordova.getActivity());
+    final WebSettings settings = webViewObj.getSettings();
+    settings.setAllowFileAccess(true);
+
   }
 
   private String getUUID() {
