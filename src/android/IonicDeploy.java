@@ -797,6 +797,9 @@ public class IonicDeploy extends CordovaPlugin {
               WebView webViewObj = new WebView(cordova.getActivity());
               final WebSettings settings = webViewObj.getSettings();
               settings.setAllowFileAccess(true);
+              settings.setAllowUniversalAccessFromFileURLs(true);
+              settings.setAllowContentAccess(false);
+              settings.setAllowFileAccessFromFileURLs(false);
               logMessage("REDIRECT", "Loading deploy version: " + uuid);
               prefs.edit().putString("loaded_uuid", uuid).apply();
               webView.loadUrlIntoView(indexLocation, false);
