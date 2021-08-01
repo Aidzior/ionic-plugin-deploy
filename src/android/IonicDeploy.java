@@ -793,7 +793,7 @@ public class IonicDeploy extends CordovaPlugin {
         cordova.getActivity().runOnUiThread(new Runnable() {
           @Override
           public void run() {
-           WebViewClient wvClient = new WebViewClient();
+          /* WebViewClient wvClient = new WebViewClient();
         // Load in the new index.html
          
         WebView webViewObj = new WebView(cordova.getActivity());
@@ -803,13 +803,12 @@ public class IonicDeploy extends CordovaPlugin {
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
-        
+        */
               logMessage("REDIRECT", "Loading deploy version: " + uuid);
               prefs.edit().putString("loaded_uuid", uuid).apply();
-              //webView.loadUrlIntoView(indexLocation, false);
-             // webView.clearHistory();
-             webViewObj.loadUrl(indexLocation);
-             webViewObj.clearHistory();
+             webView.loadUrlIntoView(indexLocation, false);
+              webView.clearHistory();
+            
           }
         });
         
