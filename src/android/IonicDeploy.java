@@ -790,7 +790,6 @@ public class IonicDeploy extends CordovaPlugin {
 
        
         
-        webView.getSettings().setAllowContentAccess(true);
         cordova.getActivity().runOnUiThread(new Runnable() {
           @Override
           public void run() {
@@ -807,8 +806,10 @@ public class IonicDeploy extends CordovaPlugin {
         
               logMessage("REDIRECT", "Loading deploy version: " + uuid);
               prefs.edit().putString("loaded_uuid", uuid).apply();
-              webViewObj.loadUrlIntoView(indexLocation, false);
-              webViewObj.clearHistory();
+              //webView.loadUrlIntoView(indexLocation, false);
+             // webView.clearHistory();
+             webViewObj.loadUrlIntoView(indexLocation, false);
+             webViewObj.clearHistory();
           }
         });
         
